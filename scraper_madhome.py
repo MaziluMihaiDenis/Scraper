@@ -18,8 +18,8 @@ email = "madoronlineshopping@gmail.com"
 password = "Madmar1998!"
 
 # --- CONFIGURARE ---
-BASE_URL = "https://ralexpucioasa.ro/categorie-produs/lenjerii-de-pat/lenjerii-de-pat-policoton/lenjerii-finet-6-piese-cu-husa-pentru-saltea/page/"
-SAVE_FOLDER = "imagini_paturi"
+BASE_URL = "https://ralexpucioasa.ro/categorie-produs/lenjerii-de-pat/lenjerii-de-pat-elvo/page/"
+SAVE_FOLDER = "imagini"
 if not os.path.exists(SAVE_FOLDER):
     os.makedirs(SAVE_FOLDER)
 
@@ -146,22 +146,23 @@ def scrape_product_details(url):
     data['Link_Img_3'] = image_links[2] if len(image_links) > 2 else "N/A"
 
     # Downloadăm imaginile găsite (Max 3 de exemplu)
+    '''
     for i, link in enumerate(image_links[:3]): 
         try:
             # Curățăm titlul pentru a crea un nume de fișier valid
-            clean_title = "".join([c for c in data['Titlu'] if c.isalnum() or c in (' ', '-', '_')]).strip()
+            #clean_title = "".join([c for c in data['Titlu'] if c.isalnum() or c in (' ', '-', '_')]).strip()
             # Adăugăm indexul la final (ex: Lenjerie_img1.jpg, Lenjerie_img2.jpg)
-            filename = f"{clean_title}_img{i+1}.jpg"
-            save_path = os.path.join(SAVE_FOLDER, filename)
+            #filename = f"{clean_title}_img{i+1}.jpg"
+            #save_path = os.path.join(SAVE_FOLDER, filename)
             
             # Salvăm calea în Excel
-            data[f'Path_Local_{i+1}'] = save_path
+            #data[f'Path_Local_{i+1}'] = save_path
             
             # Descărcarea efectivă
-            r = requests.get(link, stream=True)
-            if r.status_code == 200:
-                with open(save_path, 'wb') as f:
-                    f.write(r.content)
+            #r = requests.get(link, stream=True)
+            #if r.status_code == 200:
+            #    with open(save_path, 'wb') as f:
+            #        f.write(r.content)
                 
                 # Opțional: Detectie culoare pentru prima imagine
                 # if i == 0: data['Culoare_Detectata'] = get_dominant_color(save_path)
@@ -169,7 +170,7 @@ def scrape_product_details(url):
         except Exception as e:
             print(f"Eroare download imagine {i+1}: {e}")
             data[f'Path_Local_{i+1}'] = "Eroare"
-
+    '''
     # --- Preț și alte detalii (neschimbat) ---
     wholesale_container = soup.find('span', class_='wholesale_price_container')
     if wholesale_container:
