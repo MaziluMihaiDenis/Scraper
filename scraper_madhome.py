@@ -14,8 +14,8 @@ import re # Importăm modulul pentru expresii regulate
 from selenium.webdriver.chrome.options import Options
 
 # --- DATE AUTENTIFICARE ---
-email = "madoronlineshopping@gmail.com"
-password = "Madmar1998!"
+email = ""
+password = ""
 
 # --- CONFIGURARE ---
 BASE_URL = "https://ralexpucioasa.ro/categorie-produs/lenjerii-de-pat/lenjerii-de-pat-elvo/page/"
