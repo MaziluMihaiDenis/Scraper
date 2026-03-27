@@ -8,7 +8,7 @@ MAX_PAGE_COUNT = 10
 class IScraper:
 
     def __init__(self):
-        self.data = {}
+        self.data = []
         self.options = webdriver.ChromeOptions()
         self.driver = webdriver.Chrome(options=self.options)
 
@@ -18,7 +18,7 @@ class IScraper:
 
     def scrape(self, url):
         self.driver.get(url)
-        time.sleep(2) # Wait for the page to load
+        time.sleep(0.5) # Wait for the page to load
         self.soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         #raise NotImplementedError("Subclasses must implement this method 'scrape'")
     
@@ -37,8 +37,8 @@ class IScraper:
     def save_to_excel(self, data, save_name):
         import pandas as pd
         df = pd.DataFrame(data)
-        df.to_excel(save_name, index=False)
-        print(f"Data saved to {save_name}")
+        df.to_excel(f"saved/{save_name}.xlsx", index=False)
+        print(f"Data saved to {save_name}.xlsx")
 
     def close(self):
         self.driver.quit()

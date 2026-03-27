@@ -54,7 +54,11 @@ class AppUserInterface(ctk.CTk):
                 scraper_module = link_dict[key]
                 try:
                     scraper_module.process(url)
+
+                    print("Saving scraped data to excel...")
                     scraper_module.save_to_excel(scraper_module.data, save_name=save_name)
+                    print("Scraping completed successfully!")
+                    
                     scraper_module.close()
                     self.status_label.configure(text="Done!", fg_color="green")
                 except Exception as e:

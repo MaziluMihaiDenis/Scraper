@@ -1,0 +1,4 @@
+*.xlsx
+__pycache__/scraper_homestill_impl.cpython-314.pyc
+__pycache__/scraper_interface.cpython-314.pyc
+__pycache__/scraper_ralex_impl.cpython-314.pyc
