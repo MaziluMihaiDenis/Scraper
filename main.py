@@ -1,10 +1,12 @@
+import threading
+
 import customtkinter as ctk
 
-import scraper_ralex_impl
+from scraper_ralex_impl import RalexScraper
 from scraper_homestill_impl import HomestillScraper
 
 link_dict = {
-    "ralexpucioasa": scraper_ralex_impl,
+    "ralexpucioasa": RalexScraper(),
     "homestill": HomestillScraper()
 }
 
@@ -39,34 +41,32 @@ class AppUserInterface(ctk.CTk):
         self.status_label = ctk.CTkLabel(master=self.frame, text="Status: Ready")
         self.status_label.pack(pady=0)
 
+    def process_scraping(self, scraper_module, url, save_name):
+        try:
+            scraper_module.process(url)
+            scraper_module.save_to_excel(scraper_module.data, save_name)
+            scraper_module.close()
+            self.status_label.configure(text="Scraping completed successfully!", fg_color="green")
+        except Exception as e:
+            self.status_label.configure(text=f"Error: {str(e)}", fg_color="red")
+            print(f"Error at scraping: {e}")
+
     def scrape(self):
         url = self.url_entry.get()
         save_name = self.save_name_entry.get()
-        self.status_label.configure(text="Status: Scraping...")
-        is_valid_url = False
 
         for key in link_dict.keys():
             if url.__contains__(key):
-                self.status_label.configure(text="Scraping... " + link_dict[key].__class__.__name__)
-                is_valid_url = True
-
-                # Starting Scraper Module
+                # Starting Scraper Module On A New Thread
                 scraper_module = link_dict[key]
-                try:
-                    scraper_module.process(url)
+                threading.Thread(target=self.process_scraping, args=(scraper_module, url, save_name)).start()
 
-                    print("Saving scraped data to excel...")
-                    scraper_module.save_to_excel(scraper_module.data, save_name=save_name)
-                    print("Scraping completed successfully!")
-                    
-                    scraper_module.close()
-                    self.status_label.configure(text="Done!", fg_color="green")
-                except Exception as e:
-                    self.status_label.configure(text=f"Error: {str(e)}", fg_color="red")
-                    print(f"Error at scraping: {e}")
-                break
-        if is_valid_url == False:
-            self.status_label.configure(text="Invalid URL!", fg_color="red")
+                self.status_label.configure(text="Scraping... " + link_dict[key].__class__.__name__)
+                self.mainloop() 
+
+                return
+
+        self.status_label.configure(text="Invalid URL!", fg_color="red")
         
 user_interface = AppUserInterface()
 user_interface.mainloop()

@@ -2,7 +2,12 @@ from scraper_interface import *
 
 class HomestillScraper(IScraper):
 
+    def __init__(self):
+        self.data = []
+
     def process(self, url):
+        super().__init__()
+
         page_number = 1
         while True:
             print(f"Accesare pagina {page_number}...")
@@ -37,15 +42,21 @@ class HomestillScraper(IScraper):
         details = {}
 
         # 1. Scrape title
-        details['title'] = self.scrape_product_title()
+        details['TITLE'] = self.scrape_product_title()
         # 2. Scrape price
-        details['price'] = self.scrape_product_price()
+        details['PRICE'] = self.scrape_product_price()
         # 3. Scrape images
         for i, image in enumerate(self.scrape_product_images()):
             image = image.split("&width")[0]  # Remove query parameters
-            details[f'image_{i}'] = image
+            details[f'IMAGE_{i}'] = image
         # 4. Scrape description
-        details['description'] = self.scrape_product_description()
+        #details['DESCRIPTION'] = self.scrape_product_description()
+        # 5. Scrape variations
+        #for key, value in self.scrape_product_variations().items():
+        #    details[key] = value
+        # 6. Scrape characteristics
+        for key, value in self.scrape_product_characteristics().items():
+            details[key] = value
 
         return details
 
@@ -84,3 +95,35 @@ class HomestillScraper(IScraper):
     def scrape_product_description(self) -> str:
         description_tag = self.soup.find('div', class_='product__description')
         return description_tag.text.strip() if description_tag else "N/A"
+    
+    def scrape_product_variations(self) -> dict:
+        variations = {}
+        variations_list = []
+        variation_key = None
+
+        if self.soup.find('div', class_='product-form__label-container') is not None:
+            variation_span = self.soup.find('div', class_='product-form__label-container').find('span')
+            if variation_span and variation_span.text.strip() != None:
+                variation_key = variation_span.text.strip().split(" ")[0]
+
+        if self.soup.find('div', class_='color-swatches-container') is not None:
+            if self.soup.find_all('div', class_='color-swatch') is not None:
+                for variation in self.soup.find_all('div', class_='color-swatch'):
+                    if variation.find('span', class_='color-swatch__label') is not None:
+                        variation_text = variation.find('span', class_='color-swatch__label').text.strip()
+                    variations_list.append(variation_text)
+                if variation_key and variations_list:
+                    variations[variation_key.upper()] = variations_list
+
+        return variations
+    
+    def scrape_product_characteristics(self) -> dict:
+        characteristics = {}
+        if self.soup.find('table') is not None:
+            for detail in self.soup.find('table').find_all('tr'):
+                if detail.find_all('td'):
+                    key = detail.find_all('td')[0].text.strip().upper()
+                    value = detail.find_all('td')[1].text.strip()
+                    characteristics[key] = value
+
+        return characteristics

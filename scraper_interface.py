@@ -5,6 +5,23 @@ from bs4 import BeautifulSoup
 
 MAX_PAGE_COUNT = 10
 
+def get_clean_image_url(url):
+        if not url: 
+            return None
+        
+        clean_url = re.sub(r'-\d+x\d+(?=\.[a-zA-Z]+$)', '', url)
+        return clean_url
+
+def read_login_credentials(filename):
+    try:
+        with open(filename, "r") as file:
+            email = file.readline().strip()
+            password = file.readline().strip()
+            return email, password
+    except Exception as e:
+        print(f"Error reading login credentials: {e}")
+        return None, None
+
 class IScraper:
 
     def __init__(self):
@@ -33,6 +50,12 @@ class IScraper:
     
     def scrape_product_description(self) -> str:
         raise NotImplementedError("Subclasses must implement this method 'scrape_product_description'")
+
+    def scrape_product_variations(self) -> dict:
+        raise NotImplementedError("Subclasses must implement this method 'scrape_product_variations'")
+    
+    def scrape_product_characteristics(self) -> dict:
+        raise NotImplementedError("Subclasses must implement this method 'scrape_product_characteristics'")
 
     def save_to_excel(self, data, save_name):
         import pandas as pd
